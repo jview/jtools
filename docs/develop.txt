@@ -1,0 +1,14 @@
+开发说明：
+	扩展tools新功能，只需在org.jview.jtool.ta_tools包中增加新类，如ToolDel.java
+	新类需public class ToolDel extends ITool implements ITask
+	其他代码可参照ToolCd.java进行处理
+	
+	扩展dbs新功能，只需在org.jview.jtool.ta_dbs包中增加新类，如DbMax.java
+	新类需public class DbMax extends IDb implements ITask
+	其他代码可参照DbData进行处理
+	
+	
+	注：
+	1，程序会根据类所在的包，自动识别新的模块，执行时会调用新模块的doExecute方法，并对返回的结果用于输出。
+	2，ta_tools,ta_dbs中类的增加或删除并不会影响整个程序的运行，对程序而言只是增加了功能或则减少了功能。
+	

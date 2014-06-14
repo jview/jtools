@@ -1,0 +1,90 @@
+	public static String getValue(String key){
+		String value  = null;
+		if(propRead==null){
+			value = ""+propMap.get(key);
+		}
+		else{
+			value =  propRead.getValue(key);
+			if(value==null){
+				
+				value = ""+propMap.get(key);
+				log4.error("PARA_ERR:"+REL_PATH+" key:"+key+" value is invalid use "+value+" as default!");
+			}
+		}
+		return value;
+	}
+
+	public static int getIntValue(String key){
+		int value  = 0;
+		try{
+			if(propRead==null){
+				value =Integer.parseInt(""+propMap.get(key));
+			}
+			else{
+				try{
+					value =  propRead.getIntValue(key);
+				}catch(Exception e){
+//					e.printStackTrace();
+					value =Integer.parseInt(""+propMap.get(key));
+					log4.error("PARA_ERR:"+e.getMessage());
+					log4.error("PARA_ERR:"+REL_PATH+" key:"+key+" value is invalid use "+value+" as default!");
+				}
+				
+			}
+		}catch(Exception e){
+//			e.printStackTrace();
+			log4.error("PARA_ERR:"+e.getMessage());
+			log4.fatal("PARA_FAT:"+REL_PATH+" key:"+key+" value is invalid and default value is invalid too!");
+		}
+		return value;
+	}
+
+	public static boolean getBoolValue(String key){
+		boolean value = false;
+		
+		try{
+			if(propRead==null){
+				value =CommMethod.parseBool(""+propMap.get(key));
+			}
+			else{
+				try{
+					value =  propRead.getBoolValue(key);
+				}catch(Exception e){
+					value =CommMethod.parseBool(""+propMap.get(key));
+					log4.error("PARA_ERR:"+e.getMessage());
+					log4.error("PARA_ERR:"+REL_PATH+" key:"+key+" value is invalid use "+value+" as default!");
+				}
+				
+			}
+		}catch(Exception e){
+//			e.printStackTrace();
+			log4.error("PARA_ERR:"+e.getMessage());
+			log4.fatal("PARA_FAT:"+REL_PATH+" key:"+key+" value is invalid and default value is invalid too!");
+		}
+		return value;
+	}
+
+	public static double getDoubleValue(String key){
+		double value = 0;
+		
+		try{
+			if(propRead==null){
+				value =Double.parseDouble(""+propMap.get(key));
+			}
+			else{
+				try{
+					value =  propRead.getDoubleValue(key);
+				}catch(Exception e){
+					value =Double.parseDouble(""+propMap.get(key));
+					log4.error("PARA_ERR:"+e.getMessage());
+					log4.error("PARA_ERR:"+REL_PATH+" key:"+key+" value is invalid use "+value+" as default!");
+				}
+				
+			}
+		}catch(Exception e){
+//			e.printStackTrace();
+			log4.error("PARA_ERR:"+e.getMessage());
+			log4.fatal("PARA_FAT:"+REL_PATH+" key:"+key+" value is invalid and default value is invalid too!");
+		}
+		return value;
+	}
