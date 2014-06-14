@@ -45,9 +45,7 @@ tools功能
 ### constClass, [-f path] [-xml/-prop/-json] genFilePath packageName [className],生成constant静态常量类
 ### cp, cp source dest 文件复制
 ### date, [-f file] date1-date2[11-01/2011-00-00/now]日期计算
-### decode, [-zip] filename [key]
 ### dir, dir [*.*] [-time/-date/-datetime/-length] (.当前目录)
-### encode, [-zip] filename [key]
 ### export, [-code code] [-name name] [-lang cn/en] [-xlt xltFileName] [-out outFileName] select [column1,column2] from tableName
 ### fileModifyTime,  fileName [-datetime/-date/-time] [2011-01-01 00:00:00/2011-01-01/00:00:00]修改文件修改时间
 ### ftp, [-f] (path/file) login host user password port/dir path/download sourceFile destPath,模拟登入
