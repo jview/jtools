@@ -166,6 +166,9 @@ public class CommMethod {
 		for(Object obj:objs){
 			value =value+ obj +split_str;
 		}
+		if(value.endsWith(split_str)) {
+			value=value.substring(0, value.length()-split_str.length());
+		}
 		return value;
 	}
 	

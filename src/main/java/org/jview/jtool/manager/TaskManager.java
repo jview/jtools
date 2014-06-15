@@ -895,18 +895,12 @@ public class TaskManager {
 			return resultList;
 			
 		}	
-//		else if(cmd.equalsIgnoreCase(cmd_tool.HELP.getCmd())){
-//			String rValue = "";
-//			List<TaskVO> toolList = (List)this.taskListMap.get(task_key);
-//			for(TaskVO tInfo:toolList){
-//				rValue = rValue+tInfo.getCode()+", "+tInfo.getHelpInfo()+"\n";
-//			}			
-//			log4.info(rValue);
-//		}
 		else{
-			log4.info("Invalid "+task_key+" cmd:"+cmd);
 			rValue = "";			
-			rValue +="Invalid "+task_key+" cmd:"+cmd+"\n";
+			if(!cmd.startsWith("help")) {
+				log4.info("Invalid "+task_key+" cmd:"+cmd);
+				rValue +="Invalid "+task_key+" cmd:"+cmd+"\n";
+			}
 					
 			List<TaskVO> toolList = (List)this.taskListMap.get(task_key);
 			for(TaskVO tInfo:toolList){
@@ -1088,10 +1082,11 @@ public class TaskManager {
 //			log4.info(rValue);
 //		}
 		else{
-			log4.info("Invalid "+task_key+" cmd:"+cmd);
-			rValue = "";	
-			rValue +="Invalid "+task_key+" cmd:"+cmd+"\n";
-			
+			rValue = "";
+			if(!cmd.startsWith("help")) {
+				log4.info("Invalid "+task_key+" cmd:"+cmd);
+				rValue +="Invalid "+task_key+" cmd:"+cmd+"\n";
+			}
 		
 			for(cmd_tool cType:cmd_tool.values()){
 				rValue = rValue+cType.getCmd()+", "+cType.getHelpInfo()+"\n";
@@ -1168,9 +1163,12 @@ public class TaskManager {
 			log4.info(rValue);					
 		}		
 		else{
-			log4.info("Invalid replace cmd:"+cmd);
-			rValue = "";			
-			rValue +="Invalid replace cmd:"+cmd+"\n";
+			
+			rValue = "";
+			if(!cmd.startsWith("help")) {
+				log4.info("Invalid replace cmd:"+cmd);
+				rValue +="Invalid replace cmd:"+cmd+"\n";
+			}
 		
 			for(cmd_tool cType:cmd_tool.values()){
 				rValue = rValue+cType.getCmd()+", "+cType.getHelpInfo()+"\n";

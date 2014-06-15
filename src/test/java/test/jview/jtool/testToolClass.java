@@ -15,6 +15,7 @@ import org.jview.jtool.ta_tools.ToolDir;
 import org.jview.jtool.ta_tools.ToolExport;
 import org.jview.jtool.ta_tools.ToolFileModifyTime;
 import org.jview.jtool.ta_tools.ToolPwd;
+import org.jview.jtool.ta_tools.ToolSort;
 import org.jview.jtool.ta_tools.ToolTime;
 import org.jview.jtool.tools.DBTool;
 import org.jview.jtool.util.CommMethod;
@@ -198,5 +199,49 @@ public class testToolClass {
 		
 	}
 	
+	@Test
+	public void testSortStr() {
+		ITask tool = new ToolSort();
+		List<String> list = tool.doExecute("a,d,c,b,x");
+		
+		CommMethod.print(list);
+		TestCase.assertNotNull("sort result", list);
+		TestCase.assertEquals("sort result for ,", "a,b,c,d,x", list.get(0));
+		list = tool.doExecute("a,d,c, b, x");
+		CommMethod.print(list);
+		TestCase.assertEquals("sort result for ,", " b, x,a,c,d", list.get(0));
+		list = tool.doExecute("a#d#c#b#x");
+		CommMethod.print(list);
+		TestCase.assertEquals("sort result for #", "a#b#c#d#x", list.get(0));
+		list = tool.doExecute("a|d|c|b|x");
+		CommMethod.print(list);
+		TestCase.assertEquals("sort result for |", "a|b|c|d|x", list.get(0));
+		list = tool.doExecute("a;d;c;b;x");
+		CommMethod.print(list);
+		TestCase.assertEquals("sort result for ;", "a;b;c;d;x", list.get(0));
+		list = tool.doExecute("a/d/c/b/x");
+		CommMethod.print(list);
+		TestCase.assertEquals("sort result for /", "a/b/c/d/x", list.get(0));
+
+	}
+	
+	@Test
+	public void testSortFile() {
+		ITask tool = new ToolSort();
+		List<String> list = tool.doExecute("-f d:/data2.txt");
+		CommMethod.print(list);
+		TestCase.assertEquals("file sort success", "d:/data2.txt文件排序成功!", list.get(0));
+	}
+	
+	@Test
+	public void testSortFile2() {
+		ITask tool = new ToolSort();
+		List<String> list = tool.doExecute("-f d:/data*.txt");
+//		System.out.println(list.size());
+		CommMethod.print(list);
+		TestCase.assertEquals("file sort data file2", 2, list.size());
+		
+//		TestCase.assertEquals("file sort success", "d:/data2.txt文件排序成功!", list.get(0));
+	}
 
 }

@@ -35,6 +35,13 @@
 			<scope>system</scope> 
 			<systemPath>${basedir}/src/main/webapp/WEB-INF/lib/htmlparser-1.6.jar</systemPath> 
 		</dependency>
+		<dependency>
+			<groupId>postgresql</groupId>  
+			<artifactId>postgresql</artifactId>
+			<version>9.1</version>
+			<scope>system</scope> 
+			<systemPath>${basedir}/src/main/webapp/WEB-INF/lib/postgresql-9.1-901.jdbc4.jar</systemPath> 
+		</dependency>
 		
 		<dependency>
 			<groupId>junit</groupId>
