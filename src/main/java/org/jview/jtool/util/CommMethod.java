@@ -305,6 +305,30 @@ public class CommMethod {
 		return filterList;
 	}
 	
+	public static List<String> filterContentUnexist(List<String> dataList, String filter){
+		
+		if(ErrorCode.isEmpty(filter)){
+			return dataList;
+		}
+		else if(filter.equals("%")){
+			return dataList;
+		}
+		else{
+			filter = filter.trim();
+		}
+//		System.out.println("filter"+dataList.get(0));		
+		
+		
+		List<String> filterList = new ArrayList<String>();				
+		for(String data:dataList){				
+			if(data.indexOf(filter)<0){
+				filterList.add(data);
+			}				
+		}			
+		
+		return filterList;
+	}
+	
 	/**
 	 * 内容过滤,用于从记录中按查询内容查找相应的行(忽略大小写)
 	 * @param dataList
@@ -361,6 +385,29 @@ public class CommMethod {
 		
 		return dataList;
 	}
+	
+	/**
+	 * 内容过滤,用于从记录中按查询内容查找相应的行,支持多个条件，以split_str隔开
+	 * @param dataList
+	 * @param filter
+	 * @param split_str
+	 * @return
+	 */
+	public static List<String> filterContentUnexist(List<String> dataList, String filter, String split_str){
+//		System.out.println(filter+" split="+split_str);
+		if(filter.indexOf(split_str)>0){
+			for(String fstr:filter.split(split_str)){
+//				System.out.println("fstr="+fstr);
+				dataList=filterContentUnexist(dataList, fstr.trim());
+			}
+		}
+		else{
+			dataList=filterContentUnexist(dataList, filter);
+		}
+		
+		return dataList;
+	}
+	
 	
 	/**
 	 * 内容过滤,用于从记录中按查询内容查找相应的行,支持多个条件，以split_str隔开

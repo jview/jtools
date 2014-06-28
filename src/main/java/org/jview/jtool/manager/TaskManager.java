@@ -346,6 +346,25 @@ public class TaskManager {
 				resutList.add(dataList.get(0));
 				resutList.addAll(filterList);
 			}
+			else if(cmd.startsWith(cmd_login.FU.getCmd()+" ")){
+				String src_value = cmd.substring(2);		
+//				System.out.println("======1==="+src_value+"  cmdMode="+cmdMode+" disp="+this.disp+"  "+this.dataList.size());
+				List<String> filterList =CommMethod.filterContentUnexist(dataList, src_value, ",");
+				//保留行头处理
+				StringBuffer rSb = new StringBuffer();
+				if(this.isDataHead(cmdMode)&&dataList.size()>0){
+					rSb.append(dataList.get(0).trim()+"\n");
+				}
+//				System.out.println("======2==="+rSb.toString()+" filterList size="+filterList.size()+" showDataCount="+showDataCount+" dbTool="+dbTool);
+				String rValue = this.dbTool.getListContent(filterList, this.showDataCount, true);					
+				rSb.append(rValue);
+//				System.out.println("======21==="+rSb.toString());
+				System.out.println(rSb.toString());
+				log4.info(rSb.toString());
+				resutList.add(dataList.get(0));
+				resutList.addAll(filterList);
+				
+			}
 			else if(cmd.equalsIgnoreCase(cmd_login.FN.getCmd())||cmd.startsWith(cmd_login.FN.getCmd()+" ")){
 				String src_value = cmd.substring(cmd_login.FN.getCmd().length());
 				int pageLimit=this.dataList.size()/this.pageRow+1;
@@ -1321,6 +1340,7 @@ public class TaskManager {
 		F("f", "find", "key [key2,key3]查找内容"),
 		FF("ff", "find ", "key [key2,key3]重复找查内容，再次执行上次命令，再查结果"),
 		FN("fn", "find next page", "fn [num]翻到指定页"),
+		FU("fu", "find ", "key [key2,key3]不包含的内容(not exist)"),
 		ORDER("order", "order content", "column count对指定的例进行排序"),
 		HELP("help", "Help", "帮助"),
 		EXIT("exit", "Exit to return up level", "返回上一层"),
