@@ -153,6 +153,23 @@ public class CommMethod {
 	}
 	
 	/**
+	 * 类似javascript的join功能
+	 * @param list
+	 * @param param
+	 * @return
+	 */
+	public static String join(Object[] objs, String param){
+		String ids="";
+		for(Object obj:objs){
+			ids+=obj+param;
+		}
+		if(ids.endsWith(param)){
+			ids = ids.substring(0, ids.length()-1);
+		}
+		return ids;
+	}
+	
+	/**
 	 * 转换
 	 * @param objs
 	 * @param split_str
@@ -162,14 +179,7 @@ public class CommMethod {
 		if(split_str==null){
 			split_str=" ";
 		}
-		String value="";
-		for(Object obj:objs){
-			value =value+ obj +split_str;
-		}
-		if(value.endsWith(split_str)) {
-			value=value.substring(0, value.length()-split_str.length());
-		}
-		return value;
+		return join(objs, split_str);
 	}
 	
 	/**
