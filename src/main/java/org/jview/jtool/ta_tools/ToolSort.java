@@ -48,49 +48,20 @@ public class ToolSort extends ITool implements ITask {
 			return dataList;
 		}
 		if (rValue.startsWith("-f")) {
-			rValue = rValue.substring("-f".length()).trim();
-			if (rValue.indexOf("*") >= 0) {
-				rValue = rValue.replaceAll("\\\\", "/");
-				String path = rValue.substring(0, rValue.lastIndexOf("/")+1);
-				String fName = rValue.substring(rValue.lastIndexOf("/") + 1);
-				String[] nameKeys = fName.split("\\*");
-
-				File file = new File(path);
-				String checkStr = Path.checkDir(path);
-				if(checkStr!=null){//检查文件是否存在，是否是目录
-					dataList.add(rValue+checkStr);
-					return dataList;
+			try {
+				List<String> pathList=this.loadFilePath(rValue);
+				for(String path:pathList){
+					rValue=this.sortFile(path);
+					dataList.add(rValue);
 				}
-				String[] tempList = file.list();
-
-//				File temp = null;
-				rValue = "";
-
-				int count=0;
-				
-				for (String tempName : tempList) {
-//					 System.out.println(tempName);
-					fName = tempName;
-					count=0;
-					for(String nameKey:nameKeys){
-						if (tempName.indexOf(nameKey) >= 0) {
-							tempName=tempName.substring(tempName.indexOf(nameKey)+nameKey.length());
-	//						System.out.println(path+"/"+tempName);
-//							System.out.println(nameKey+"-------"+tempName);
-							count++;
-							
-						}
-					}
-					if(count==nameKeys.length){
-						rValue = rValue + this.sortFile(path+fName)+"\n";
-						dataList.add(rValue);
-					}
-				}
-
-			} else {
-				rValue = this.sortFile(rValue);
-				dataList.add(rValue);
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+				dataList.add(e.getMessage());
+				return dataList;
 			}
+
+			
 
 		} else {
 			rValue = this.sort(rValue);

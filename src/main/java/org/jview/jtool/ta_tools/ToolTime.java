@@ -76,47 +76,17 @@ public class ToolTime extends ITool implements ITask {
 		}
 		
 		if (rValue.startsWith("-f")) {
-			rValue = rValue.substring("-f".length()).trim();
-			if (rValue.indexOf("*") >= 0) {
-				rValue = rValue.replaceAll("\\\\", "/");
-				String path = rValue.substring(0, rValue.lastIndexOf("/"));
-				String fName = rValue.substring(rValue.lastIndexOf("/") + 1);
-				String[] nameKeys = fName.split("\\*");
-
-				File file = new File(path);
-				if (!file.exists()) {
-					dataList.add(rValue+"的"+path + "目录不存在");
-					return dataList;
+			try {
+				List<String> pathList=this.loadFilePath(rValue);
+				for(String path:pathList){
+					rValue=this.time(path);
+					dataList.add(rValue);
 				}
-				if (!file.isDirectory()) {
-					dataList.add(rValue+"的"+path + "文件不是目录");
-					return dataList;
-				}
-				String[] tempList = file.list();
-
-//				File temp = null;
-				rValue = "";
-
-				int count=0;
-				//*通配处理，有顺序的分段，从前面开始找，前面找到后，继续往后面找
-				for (String tempName : tempList) {
-					fName = tempName;
-					count=0;
-					for(String nameKey:nameKeys){
-						if (tempName.indexOf(nameKey) >= 0) {
-							tempName=tempName.substring(tempName.indexOf(nameKey)+nameKey.length());
-							count++;							
-						}
-					}
-					if(count==nameKeys.length){
-						rValue = rValue + this.time(path+"/"+fName)+"\n";
-						dataList.add(rValue);
-					}
-				}
-
-			} else {
-				rValue = this.time(rValue);
-				dataList.add(rValue);
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+				dataList.add(e.getMessage());
+				return dataList;
 			}
 
 		} else {

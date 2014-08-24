@@ -45,46 +45,18 @@ public class ToolTrim extends ITool implements ITask {
 			return dataList;
 		}
 		if (rValue.startsWith("-f")) {
-			rValue = rValue.substring("-f".length()).trim();
-			if (rValue.indexOf("*") >= 0) {
-				rValue = rValue.replaceAll("\\\\", "/");
-				String path = rValue.substring(0, rValue.lastIndexOf("/"));
-				String fName = rValue.substring(rValue.lastIndexOf("/") + 1);
-				String[] nameKeys = fName.split("\\*");
-
-				File file = new File(path);
-				String checkStr = Path.checkDir(path);
-				if(checkStr!=null){//检查文件是否存在，是否是目录
-					dataList.add(rValue+checkStr);
-					return dataList;
+			try {
+				List<String> pathList=this.loadFilePath(rValue);
+				for(String path:pathList){
+					rValue=this.trim(path);
+					dataList.add(rValue);
 				}
-				String[] tempList = file.list();
-
-//				File temp = null;
-				rValue = "";
-
-				int count=0;
-				//*通配处理，有顺序的分段，从前面开始找，前面找到后，继续往后面找
-				for (String tempName : tempList) {
-					fName = tempName;
-					count=0;
-					for(String nameKey:nameKeys){
-						if (tempName.indexOf(nameKey) >= 0) {
-							tempName=tempName.substring(tempName.indexOf(nameKey)+nameKey.length());
-							count++;							
-						}
-					}
-					if(count==nameKeys.length){
-						rValue = rValue + this.trim(path+"/"+fName)+"\n";
-						dataList.add(rValue);
-					}
-				}
-
-			} else {
-				rValue = this.trim(rValue);
-				dataList.add(rValue);
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+				dataList.add(e.getMessage());
+				return dataList;
 			}
-
 		} else {
 			rValue = rValue.trim();
 			dataList.add(rValue);
