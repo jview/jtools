@@ -76,6 +76,7 @@ public class DBTool {
 			this.driver=config.getProperty("driver");
 			this.user=config.getProperty("user");
 			this.pwd=config.getProperty("password");
+			this.dsPath=config.getProperty("dsPath");
 			
 		} catch (Exception e) {
 			log4.error(e.getMessage());
@@ -112,6 +113,9 @@ public class DBTool {
 	
 	public boolean isPostgresql(){
 		return this.driver.indexOf("postgres")>=0;
+	}
+	public boolean isMysql(){
+		return this.driver.indexOf("mysql")>=0;
 	}
 	
 	/**
@@ -890,6 +894,7 @@ public class DBTool {
 		if(columnName==null){
 			return null;
 		}
+		columnName=columnName.toLowerCase();
 		String[] strs = columnName.split("_");
 		value = strs[0];
 		for(int i=1; i<strs.length; i++){
@@ -1031,6 +1036,7 @@ public class DBTool {
 	private String user;
 	private String pwd;
 	private String port;
+	private String dsPath;
 	
 	private boolean showDataCount=false;
 	private int maxTotalRow=MAX_TOTAL_ROW;

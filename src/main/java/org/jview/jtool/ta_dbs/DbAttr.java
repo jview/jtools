@@ -1,9 +1,12 @@
 package org.jview.jtool.ta_dbs;
 
+import java.sql.DatabaseMetaData;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.log4j.Logger;
 import org.jview.jtool.ITask;
@@ -54,12 +57,56 @@ public class DbAttr extends IDb implements ITask{
 		}
 	
 		String sql = dbTool.getSqlSelect(tableName);
+		java.sql.ResultSet rs=null;
+		Map<String, String> commMap =new HashMap();
 		try {			
+			DatabaseMetaData dbmd=dbTool.getConn().getMetaData();
+			String commentSql="";
+			if(dbTool.isPostgresql()){
+				commentSql="SELECT a.attname AS column_name, col_description (a.attrelid, a.attnum) AS comments"
+						+ " FROM  pg_class AS c,  pg_attribute AS a"
+						+ " WHERE a.attrelid = c.oid AND a.attnum > 0  and c.relname=lower('"+tableName+"')";
+			}
+			else if(dbTool.isOracle()){
+				commentSql="select column_name, comments from user_col_comments where table_name=upper('"+tableName+"')";
+			}
+			else if(dbTool.isMysql()){
+				String url=dbTool.getConn().getMetaData().getURL();
+				String scheme=url.substring(url.lastIndexOf("/"));
+				if(scheme.startsWith("/")){
+					scheme=scheme.substring(1);
+				}
+				commentSql="select column_name, COLUMN_COMMENT as comments from information_schema.columns where table_schema ='"+scheme+"'  and table_name = '"+tableName+"'";
+			}
+			if(commentSql.length()>0){
+//				System.out.println("-----commentSql="+commentSql);
+				PreparedStatement psdb =dbTool.getConn().prepareStatement(commentSql);
+				rs=psdb.executeQuery();
+				
+				String col=null;
+				while(rs.next()){
+					col=rs.getString("column_name");
+					commMap.put(col, rs.getString("comments"));
+				}
+			}
+
+			
 			PreparedStatement ps = dbTool.getConn().prepareStatement(sql);
-			java.sql.ResultSet rs = ps.executeQuery();
+			rs = ps.executeQuery();
 			java.sql.ResultSetMetaData rsm = rs.getMetaData();
+			
+			String colName=null;
+			String comment=null;
 			for(int i=1;i<=rsm.getColumnCount();i++){
-				sList.add("private "+dbTool.getJavaType(rsm.getColumnType(i))+" "+dbTool.columnAttr(rsm.getColumnName(i))+";");				
+				colName=rsm.getColumnName(i);
+				comment=commMap.get(colName);
+				if(comment!=null){
+					comment="//"+comment;
+				}
+				else{
+					comment="";
+				}
+				sList.add("private "+dbTool.getJavaType(rsm.getColumnType(i))+" "+dbTool.columnAttr(colName)+";	"+comment);				
 			}
 			rs.close();
 			ps.close();

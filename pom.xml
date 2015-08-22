@@ -44,6 +44,14 @@
 		</dependency>
 		
 		<dependency>
+			<groupId>ojdbc</groupId>  
+			<artifactId>ojdbc</artifactId>
+			<version>14</version>
+			<scope>system</scope> 
+			<systemPath>${basedir}/src/main/webapp/WEB-INF/lib/ojdbc14.jar</systemPath> 
+		</dependency>
+		
+		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
 			<version>4.11</version>
