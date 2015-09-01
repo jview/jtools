@@ -10,11 +10,11 @@ import org.jview.jtool.tools.DBTool;
 
 
 
-public class DbShowDb extends IDb implements ITask{
-	private static Logger log4 = Logger.getLogger(DbShowDb.class);
+public class DbChangeDb extends IDb implements ITask{
+	private static Logger log4 = Logger.getLogger(DbChangeDb.class);
 	public static int OPER_ID=0;
-	public static String CODE="showDb";
-	public static String HELP_INFO="显示所有的DataSource";
+	public static String CODE="changeDb";
+	public static String HELP_INFO="change to other DataSource";
 	public int getTaskId(){
 		return OPER_ID;
 	}
@@ -39,8 +39,8 @@ public class DbShowDb extends IDb implements ITask{
 				return sList;
 			}
 		}
-
-		sList.addAll(dbTool.getDbNames());
+		String result=dbTool.changeDb(rValue);
+		sList.add(result);
 	
 		return sList;
 	}

@@ -1,5 +1,6 @@
 package org.jview.jtool.ta_dbs;
 
+import java.sql.DatabaseMetaData;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -13,11 +14,11 @@ import org.jview.jtool.util.ErrorCode;
 
 
 
-public class DbMyInsert extends IDb implements ITask{
-	private static Logger log4 = Logger.getLogger(DbMyInsert.class);
+public class DbMyUpdate extends IDb implements ITask{
+	private static Logger log4 = Logger.getLogger(DbMyUpdate.class);
 	public static int OPER_ID=6;
-	public static String CODE="myinsert";
-	public static String HELP_INFO="tableName成生mybatis insert sql语句";
+	public static String CODE="myupdate";
+	public static String HELP_INFO="tableName&key,key1,!key2成生mybatis xml update sql语句";
 	public int getTaskId(){
 		return OPER_ID;
 	}
@@ -30,8 +31,8 @@ public class DbMyInsert extends IDb implements ITask{
 
 	
 	@Override
-	public List<String> doExecute(String tableName) {
-		String rValue = tableName;
+	public List<String> doExecute(String tableName_key) {
+		String rValue = tableName_key;
 		List<String> sList = new ArrayList<String>();
 
 		if(!ErrorCode.isEmpty(rValue)&& !rValue.equals(this.CODE)){
@@ -54,10 +55,20 @@ public class DbMyInsert extends IDb implements ITask{
 			}
 		}
 
-		if(tableName.trim().toLowerCase().startsWith("select")){
-			log4.error("Invalid tableName:"+tableName);
+		if(tableName_key.trim().toLowerCase().startsWith(this.CODE)){
+			log4.error("Error:tableName is "+tableName_key);
 			log4.info(this.CODE+", "+this.HELP_INFO);
 			sList.add(this.CODE+", "+this.HELP_INFO);
+			return sList;
+		}
+		
+		String tableName=null,keys=null;
+		if(tableName_key.indexOf("&")>0){
+			tableName = tableName_key.substring(0, tableName_key.indexOf("&"));
+			keys = tableName_key.substring(tableName_key.indexOf("&")+1);
+		}
+		else{
+		log4.error("tableName "+tableName_key+" have no key of column");
 			return sList;
 		}
 		
@@ -70,28 +81,55 @@ public class DbMyInsert extends IDb implements ITask{
 			ps.setMaxRows(1);
 			java.sql.ResultSetMetaData rsm = rs.getMetaData();
 			int colCount=rsm.getColumnCount();
-//			System.out.println("----colCount="+colCount);
-			String insertStart="insert into "+tableName+"\n(";
-			for(int i=1;i<=colCount;i++){
-				insertStart+=rsm.getColumnName(i)+"\n	,";
-			}
-			insertStart=insertStart.trim();
-			if(insertStart.endsWith(",")){
-				insertStart=insertStart.substring(0, insertStart.length()-1);
-			}
-			insertStart+=")\n values \n(";
+			String updateSql="update "+tableName+" set \n	";
 			String cType=null;
-			String dataLine="";
+			String colName=null;
+			boolean isExist=false;
 			for(int i=1;i<=colCount;i++){
+				colName=rsm.getColumnName(i);
+				isExist=false;
+				for(String key:keys.split(",")){
+					if(key.equalsIgnoreCase("!"+colName)){
+						isExist=true;
+						break;
+					}
+				}
+				if(isExist){
+					continue;
+				}
 				cType=rsm.getColumnTypeName(i).toUpperCase();
-				dataLine+="#{"+dbTool.columnAttr(rsm.getColumnName(i))
+				updateSql+=colName+"=	#{"+dbTool.columnAttr(colName)
 					+",jdbcType="+cType+"}\n	,";
 			}
-			dataLine=dataLine.trim();
-			if(dataLine.endsWith(",")){
-				dataLine=dataLine.substring(0, dataLine.length()-1);
+			updateSql=updateSql.trim();
+			if(updateSql.endsWith(",")){
+				updateSql=updateSql.substring(0, updateSql.length()-1);
+				updateSql=updateSql.trim();
 			}
-			sList.add(insertStart+dataLine+");");
+			
+			//condition
+			String conSql="";
+			for(int i=1;i<=colCount;i++){
+				colName=rsm.getColumnName(i);
+				isExist=false;
+				for(String key:keys.split(",")){
+					if(key.equalsIgnoreCase(colName)){
+						isExist=true;
+						break;
+					}
+				}
+				if(isExist){
+					cType=rsm.getColumnTypeName(i).toUpperCase();
+					conSql+=colName+"=#{"+dbTool.columnAttr(colName)
+					+",jdbcType="+cType+"}\n and ";
+				}
+			}
+			if(conSql.length()>0){
+				conSql=conSql.trim();
+				conSql=conSql.substring(0, conSql.length()-"and".length());
+			}
+			
+			sList.add(updateSql+"\n where "+conSql);
 			rs.close();
 			ps.close();
 			

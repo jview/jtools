@@ -13,6 +13,7 @@ public class testDbs {
 	public static TaskManager taskManager;
 	@BeforeClass
 	public static void init(){
+		TaskManager.debug=true;
 		taskManager = new TaskManager();
 		String[] args={"para", "dbs", "desc", "tg_user"};
 //		taskManager.main(args);
@@ -31,9 +32,17 @@ public class testDbs {
 		TaskManager.main(args);
 	}
 	
+	
+	
 	@Test
 	public void testAttr(){
 		String[] args={"para", "dbs", "attr ts_user"};
+		TaskManager.main(args);
+	}
+	
+	@Test
+	public void testCol(){
+		String[] args={"para", "dbs", "col ts_user"};
 		TaskManager.main(args);
 	}
 	
@@ -46,6 +55,12 @@ public class testDbs {
 	@Test
 	public void testUpdate(){
 		String[] args={"para", "dbs", "update ts_user&user_id,!password,!user_id"};
+		TaskManager.main(args);
+	}
+	
+	@Test
+	public void testMyUpdate(){
+		String[] args={"para", "dbs", "myupdate ts_user&user_id,!user_id"};
 		TaskManager.main(args);
 	}
 	
