@@ -79,7 +79,8 @@ public class DbConstClass extends IDb implements ITask{
 		
 		try {
 			
-			Statement ps = dbTool.getConn().createStatement(ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_READ_ONLY);			
+			Statement ps = dbTool.getConn().createStatement(ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_READ_ONLY);
+			ps.setMaxRows(1);
 			java.sql.ResultSet rs = ps.executeQuery(sqlStr);
 			
 			rs.last();					

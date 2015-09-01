@@ -1,5 +1,6 @@
 package org.jview.jtool.ta_dbs;
 
+import java.sql.DatabaseMetaData;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -13,11 +14,11 @@ import org.jview.jtool.util.ErrorCode;
 
 
 
-public class DbCol extends IDb implements ITask{
-	private static Logger log4 = Logger.getLogger(DbCol.class);
-	public static int OPER_ID=3;
-	public static String CODE="col";
-	public static String HELP_INFO="tableName&sql显示表字段";
+public class DbMyInsert extends IDb implements ITask{
+	private static Logger log4 = Logger.getLogger(DbMyInsert.class);
+	public static int OPER_ID=6;
+	public static String CODE="myinsert";
+	public static String HELP_INFO="tableName成生insert sql语句";
 	public int getTaskId(){
 		return OPER_ID;
 	}
@@ -33,6 +34,7 @@ public class DbCol extends IDb implements ITask{
 	public List<String> doExecute(String tableName) {
 		String rValue = tableName;
 		List<String> sList = new ArrayList<String>();
+
 		if(!ErrorCode.isEmpty(rValue)&& !rValue.equals(this.CODE)){
 			rValue = rValue.trim();			
 		}
@@ -52,31 +54,57 @@ public class DbCol extends IDb implements ITask{
 				return sList;
 			}
 		}
-	
-		String sql = dbTool.getSqlSelect(tableName);
+
+		if(tableName.trim().toLowerCase().startsWith("select")){
+			log4.error("Invalid tableName:"+tableName);
+			log4.info(this.CODE+", "+this.HELP_INFO);
+			sList.add(this.CODE+", "+this.HELP_INFO);
+			return sList;
+		}
+		
+//		String sql = "select * from "+ tableName;
 		try {
-			
+			String sql = dbTool.getSqlSelect(tableName);
+//			System.out.println("---sql="+sql);
 			PreparedStatement ps = dbTool.getConn().prepareStatement(sql);
-			ps.setMaxRows(1);
 			java.sql.ResultSet rs = ps.executeQuery();
+			ps.setMaxRows(1);
 			java.sql.ResultSetMetaData rsm = rs.getMetaData();
-			String columnName = null;
+			int colCount=rsm.getColumnCount();
+//			System.out.println("----colCount="+colCount);
+			String insertStart="insert into "+tableName+"\n(";
 			for(int i=1;i<=rsm.getColumnCount();i++){
-				columnName = rsm.getColumnName(i);
-				sList.add(columnName+"\t"+dbTool.columnAttr(columnName.toLowerCase()));
+				insertStart+=rsm.getColumnName(i)+"\n	,";
 			}
+			insertStart=insertStart.trim();
+			if(insertStart.endsWith(",")){
+				insertStart=insertStart.substring(0, insertStart.length()-1);
+			}
+			insertStart+=")\n values \n(";
+			String cType=null;
+			String dataLine="";
+			for(int i=1;i<=rsm.getColumnCount();i++){
+				cType=rsm.getColumnTypeName(i);
+				dataLine+="#{"+dbTool.columnAttr(rsm.getColumnName(i))
+					+",jdbcType="+cType+"}\n	,";
+			}
+			dataLine=dataLine.trim();
+			if(dataLine.endsWith(",")){
+				dataLine=dataLine.substring(0, dataLine.length()-1);
+			}
+			sList.add(insertStart+dataLine+");");
 			rs.close();
 			ps.close();
 			
 		} catch (SQLException e) {			
 //			System.err.println("error:sql="+sql);
-			sList.clear();
-			sList.add("error:Invalid sql="+sql);
+			sList.add("Invalid tableName:"+tableName);
 			log4.error(e.getMessage());
 			if(TaskManager.debug){
 				e.printStackTrace();
 			}
 		}
+		
 		return sList;
 	}
 	

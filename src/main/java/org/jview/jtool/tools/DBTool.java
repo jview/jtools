@@ -4,23 +4,28 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
 import java.sql.Connection;
-import java.sql.DatabaseMetaData;
 import java.sql.DriverManager;
-import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.sql.Types;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Properties;
+import java.util.Set;
+
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
 
 import org.apache.log4j.Logger;
-import org.jview.jtool.model.LineVO;
+import org.jview.jtool.thread.LoadDbThread;
 import org.jview.jtool.util.ErrorCode;
-
-
-import java.sql.Types;
+import org.w3c.dom.Document;
+import org.w3c.dom.NamedNodeMap;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 
 
 
@@ -41,6 +46,9 @@ public class DBTool {
 	
 	public DBTool(){
 		this.loadConfig();
+		Thread thread = new Thread(new LoadDbThread(this.dsPath, connMap));
+		thread.start();
+		
 //		this.init();
 	}
 	
@@ -86,11 +94,15 @@ public class DBTool {
 			
 		}
 	}
+	private static Map<String, Connection> connMap=new HashMap();
 	private Connection conn = null;
+	private String connType=null;
 	public String init(){
 		try{
 			Class.forName(this.driver);			
 			conn = DriverManager.getConnection(this.url, this.user, this.pwd);
+			this.connMap.put("conn", conn);
+			this.connType="conn";
 			log4.info(this.url);
 			this.isInit=true;
 			return null;
@@ -103,7 +115,10 @@ public class DBTool {
 		}
 	}
 	
+	
+	
 	public Connection getConn(){
+		this.conn=connMap.get(this.connType);
 		return this.conn;
 	}
 	
@@ -131,6 +146,39 @@ public class DBTool {
 			sql = tableName;
 		}
 		return sql;
+	}
+	
+	public List<String> getDbNames(){
+		Set<String> keys=connMap.keySet();
+		List<String> infoList=new ArrayList();
+		String info=null;
+		Connection conn=null;
+		for(String key:keys){
+			conn=(Connection)connMap.get(key);
+			if(conn!=null){
+				try {
+					info="dbName:"+key+" userName:"+conn.getMetaData().getUserName();
+					infoList.add(info);
+				} catch (SQLException e) {
+					infoList.add("dbName:"+key+","+e.getMessage());
+				}
+			}
+		}
+		return infoList;
+	}
+	
+	public String changeDb(String dbName){
+		Set<String> keys=connMap.keySet();
+		List<String> infoList=new ArrayList();
+		String info=null;
+		Connection conn=null;
+		for(String key:keys){
+			if(key.equalsIgnoreCase(dbName)){
+				connType=dbName;
+				return "change db to "+connType;
+			}
+		}
+		return dbName+" is not exist";
 	}
 	
 //	/**

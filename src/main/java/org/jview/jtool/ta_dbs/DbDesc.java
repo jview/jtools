@@ -1,6 +1,6 @@
 package org.jview.jtool.ta_dbs;
 
-import java.sql.ResultSet;
+import java.sql.PreparedStatement;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -60,7 +60,9 @@ public class DbDesc extends IDb implements ITask{
 		sb.append("create table ").append(tableName).append("(").append("\n\t");
 		try {
 			String sql = "select * from " + tableName;
-			ResultSet rs = dbTool.getConn().prepareStatement(sql).executeQuery();
+			PreparedStatement ps = dbTool.getConn().prepareStatement(sql);
+			ps.setMaxRows(1);
+			java.sql.ResultSet rs = ps.executeQuery();
 			ResultSetMetaData rsmd = rs.getMetaData();
 			int columnCount = rsmd.getColumnCount();
 

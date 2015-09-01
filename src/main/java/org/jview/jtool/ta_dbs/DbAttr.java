@@ -93,6 +93,7 @@ public class DbAttr extends IDb implements ITask{
 			
 			PreparedStatement ps = dbTool.getConn().prepareStatement(sql);
 			rs = ps.executeQuery();
+			ps.setMaxRows(1);
 			java.sql.ResultSetMetaData rsm = rs.getMetaData();
 			
 			String colName=null;

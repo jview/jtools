@@ -15,11 +15,30 @@ public class testDbs {
 	public static void init(){
 		taskManager = new TaskManager();
 		String[] args={"para", "dbs", "desc", "tg_user"};
-		taskManager.main(args);
+//		taskManager.main(args);
+		taskManager.initTask();
 	}
 	@Test
 	public void testShow(){
 		String[] args={"para", "dbs", "show"};
+		TaskManager.main(args);
+	}
+	
+	@Test
+	public void testAttr(){
+		String[] args={"para", "dbs", "attr ts_user"};
+		TaskManager.main(args);
+	}
+	
+	@Test
+	public void testMyInsert(){
+		String[] args={"para", "dbs", "myinsert ts_user"};
+		TaskManager.main(args);
+	}
+	
+	@Test
+	public void testUpdate(){
+		String[] args={"para", "dbs", "update ts_user&user_id,!password,!user_id"};
 		TaskManager.main(args);
 	}
 	
@@ -56,10 +75,10 @@ public class testDbs {
 	
 	@Test
 	public void testFData(){
-		TaskManager tm = new TaskManager();
-		String[] args={"para", "dbs", "desc", "ts_user"};
-		tm.main(args);
-		List<String> dataList=tm.cmdDbsOper("fdata tg_user|f test");
+//		TaskManager tm = new TaskManager();
+//		String[] args={"para", "dbs", "desc", "ts_user"};
+//		tm.main(args);
+		List<String> dataList=this.taskManager.cmdDbsOper("fdata tg_user|f test");
 		TestCase.assertEquals("data tg_user count=2", dataList.size(), 2);
 	}
 	
