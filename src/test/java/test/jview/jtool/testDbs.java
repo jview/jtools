@@ -18,9 +18,16 @@ public class testDbs {
 //		taskManager.main(args);
 		taskManager.initTask();
 	}
+	
 	@Test
 	public void testShow(){
 		String[] args={"para", "dbs", "show"};
+		TaskManager.main(args);
+	}
+	
+	@Test
+	public void testShowDb(){
+		String[] args={"para", "dbs", "showDb"};
 		TaskManager.main(args);
 	}
 	
