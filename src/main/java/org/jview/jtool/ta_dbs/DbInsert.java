@@ -119,7 +119,7 @@ public class DbInsert extends IDb implements ITask{
 			
 		} catch (SQLException e) {			
 //			System.err.println("error:sql="+sql);
-			sList.add("Invalid tableName:"+tableName);
+			sList.add("error:Invalid sql="+sql+","+e.getMessage());
 			log4.error(e.getMessage());
 			if(TaskManager.debug){
 				e.printStackTrace();

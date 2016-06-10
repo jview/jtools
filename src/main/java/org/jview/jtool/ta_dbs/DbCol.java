@@ -71,7 +71,7 @@ public class DbCol extends IDb implements ITask{
 		} catch (SQLException e) {			
 //			System.err.println("error:sql="+sql);
 			sList.clear();
-			sList.add("error:Invalid sql="+sql);
+			sList.add("error:Invalid sql="+sql+","+e.getMessage());
 			log4.error(e.getMessage());
 			if(TaskManager.debug){
 				e.printStackTrace();

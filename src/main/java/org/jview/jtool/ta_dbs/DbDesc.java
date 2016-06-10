@@ -93,7 +93,7 @@ public class DbDesc extends IDb implements ITask{
 		} catch (SQLException e) {
 			log4.error(e.getMessage());
 			sb=new StringBuilder();
-			sb.append("error:Invalid tableName="+tableName);
+			sList.add("error:tableName="+tableName+","+e.getMessage());
 			if(TaskManager.debug){
 				e.printStackTrace();
 			}

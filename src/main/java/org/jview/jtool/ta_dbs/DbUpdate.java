@@ -197,7 +197,7 @@ public class DbUpdate extends IDb implements ITask{
 			
 		} catch (SQLException e) {			
 //			System.err.println("error:sql="+sql);
-			sList.add("Invalid tableName_key:"+tableName_key);
+			sList.add("Invalid tableName_key:"+tableName_key+","+e.getMessage());
 			log4.error(e.getMessage());
 			if(TaskManager.debug){
 				e.printStackTrace();

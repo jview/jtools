@@ -60,6 +60,7 @@ public class DbSelect extends IDb implements ITask{
 //		List<String> sList = new ArrayList<String>();
 		try {			
 			PreparedStatement ps = dbTool.getConn().prepareStatement(sql);
+			ps.setMaxRows(1);
 			java.sql.ResultSet rs = ps.executeQuery();
 			java.sql.ResultSetMetaData rsm = rs.getMetaData();			
 			String columnName = null;
@@ -79,7 +80,7 @@ public class DbSelect extends IDb implements ITask{
 			
 		} catch (SQLException e) {			
 //			System.err.println("error:sql="+sql);
-			rValue = "Invalid tableName:"+tableName;
+			sList.add("error:Invalid sql="+sql+","+e.getMessage());
 			sList.add(rValue);
 			log4.error(e.getMessage());
 			if(TaskManager.debug){

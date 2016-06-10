@@ -1,8 +1,7 @@
 package org.jview.jtool.ta_dbs;
 
-import java.sql.ResultSet;
+import java.sql.PreparedStatement;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -14,11 +13,11 @@ import org.jview.jtool.util.ErrorCode;
 
 
 
-public class DbXml extends IDb implements ITask{
-	private static Logger log4 = Logger.getLogger(DbXml.class);
-	public static int OPER_ID=2;
-	public static String CODE="xml";
-	public static String HELP_INFO="tableName&sql 数据生成xml格式数据";
+public class DbMySelect extends IDb implements ITask{
+	private static Logger log4 = Logger.getLogger(DbMySelect.class);
+	public static int OPER_ID=10;
+	public static String CODE="myselect";
+	public static String HELP_INFO="tableName&sql生成查询语句(字段别名为类属性)";
 	public int getTaskId(){
 		return OPER_ID;
 	}
@@ -31,9 +30,6 @@ public class DbXml extends IDb implements ITask{
 
 	
 	@Override
-	/**
-	 * {id:0, value:'教员'},
-	 */
 	public List<String> doExecute(String tableName) {
 		String rValue = tableName;
 		List<String> sList = new ArrayList<String>();
@@ -56,54 +52,49 @@ public class DbXml extends IDb implements ITask{
 				return sList;
 			}
 		}
-	
+		List<String> dataList = new ArrayList<String>();
 		String sql = dbTool.getSqlSelect(tableName);
 		
-		try {
-			
-			Statement ps = dbTool.getConn().createStatement(ResultSet.TYPE_SCROLL_SENSITIVE, ResultSet.CONCUR_READ_ONLY);			
-			java.sql.ResultSet rs = ps.executeQuery(sql);
-			
-			rs.last();					
-			if(rs.getRow()>dbTool.getMaxTotalRow()){
-				log4.info("Out of max total row limit:"+rs.getRow());				
-				rs.close();
-				ps.close();
-				return sList;
-			}
-			
-			java.sql.ResultSetMetaData rsm = rs.getMetaData();
-			int columnCount = rsm.getColumnCount();
-			String dataLine = "";
+		
+//		List<String> sList = dbTool.getTableSelect(tableName);
+//		List<String> sList = new ArrayList<String>();
+		try {			
+			PreparedStatement ps = dbTool.getConn().prepareStatement(sql);
+			ps.setMaxRows(1);
+			java.sql.ResultSet rs = ps.executeQuery();
+			java.sql.ResultSetMetaData rsm = rs.getMetaData();			
 			String columnName = null;
-			String xmlInfo=null;		
-			rs.first();
-			rs.beforeFirst();
-			while(rs.next()){
-				dataLine = "";
-				xmlInfo="<row>\n";
-				for(int i=1; i<=columnCount; i++){
-					columnName=dbTool.columnAttr(rsm.getColumnName(i)).trim();
-					xmlInfo+="	<"+columnName+">"+(""+rs.getString(i)).trim()+"</"+columnName+">\n";
+			String escName = null;
+			for(int i=1;i<=rsm.getColumnCount();i++){			
+				columnName = rsm.getColumnName(i).toLowerCase();				
+				if(columnName.indexOf("_")>0){
+					sList.add(columnName+" as "+dbTool.columnAttr(columnName)+", ");
 				}
-				xmlInfo +="</row>\n";
-				dataLine += xmlInfo+"\t";
-				sList.add(dataLine);
+				else{
+					escName = dbTool.getEscape(columnName);
+					sList.add(escName+", ");
+				}	
 			}
 			rs.close();
 			ps.close();
 			
 		} catch (SQLException e) {			
-			log4.error(e.getMessage());
-			sList.clear();
+//			System.err.println("error:sql="+sql);
 			sList.add("error:Invalid sql="+sql+","+e.getMessage());
+			sList.add(rValue);
+			log4.error(e.getMessage());
 			if(TaskManager.debug){
 				e.printStackTrace();
 			}
 		}
-//		System.out.println("------------dbData-doExecute--end-");
 		
-		return sList;
+		rValue = dbTool.getListContent(sList, false, false).trim();
+		if(rValue.endsWith(",")){
+			rValue = rValue.substring(0, rValue.length()-1);
+		}
+		rValue = "select "+rValue+" "+sql.substring(sql.indexOf("from"));
+		dataList.add(rValue);
+		return dataList;
 	}
 	
 	

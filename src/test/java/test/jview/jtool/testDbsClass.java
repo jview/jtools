@@ -14,6 +14,9 @@ import org.jview.jtool.ta_dbs.DbEnum;
 import org.jview.jtool.ta_dbs.DbFData;
 import org.jview.jtool.ta_dbs.DbInsert;
 import org.jview.jtool.ta_dbs.DbJson;
+import org.jview.jtool.ta_dbs.DbMyInsert;
+import org.jview.jtool.ta_dbs.DbMySelect;
+import org.jview.jtool.ta_dbs.DbMyUpdate;
 import org.jview.jtool.ta_dbs.DbSelect;
 import org.jview.jtool.ta_dbs.DbShow;
 import org.jview.jtool.tools.DBTool;
@@ -111,7 +114,40 @@ public class testDbsClass {
 		TestCase.assertTrue("tg_role count>2", list.size()>2);
 	
 	}
+
 	
+	@Test
+	public void testMyInsert_config(){
+		ITask dir = new DbMyInsert();
+		TaskManager dbInfo = new TaskManager();
+		dbInfo.dbTool = new DBTool();
+		List<String> list=dir.doExecute("tg_role");
+		CommMethod.print(list);
+//		TestCase.assertTrue("tg_role count>2", list.size()>2);
+	
+	}
+	
+	@Test
+	public void testMyUpdate_config(){
+		ITask dir = new DbMyUpdate();
+		TaskManager dbInfo = new TaskManager();
+		dbInfo.dbTool = new DBTool();
+		List<String> list=dir.doExecute("tg_role&ID");
+		CommMethod.print(list);
+//		TestCase.assertTrue("tg_role count>2", list.size()>2);
+	
+	}
+	
+	@Test
+	public void testMySelect_config(){
+		ITask dir = new DbMySelect();
+		TaskManager dbInfo = new TaskManager();
+		dbInfo.dbTool = new DBTool();
+		List<String> list=dir.doExecute("tg_role");
+		CommMethod.print(list);
+//		TestCase.assertTrue("tg_role count>2", list.size()>2);
+	
+	}
 	
 	
 	@Test

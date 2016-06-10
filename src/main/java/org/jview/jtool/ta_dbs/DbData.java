@@ -93,7 +93,7 @@ public class DbData extends IDb implements ITask{
 		} catch (SQLException e) {			
 			log4.error(e.getMessage());
 			sList.clear();
-			sList.add("error:Invalid sql="+sql);
+			sList.add("error:Invalid sql="+sql+","+e.getMessage());
 			if(TaskManager.debug){
 				e.printStackTrace();
 			}

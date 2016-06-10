@@ -85,9 +85,8 @@ public class DbSql extends IDb implements ITask{
 			log4.error(e.getMessage());
 			if(TaskManager.debug){
 				e.printStackTrace();
-			}		
-			rResult = "Operate fail";
-			sList.add(rResult);
+			}
+			sList.add("error:Operate fail: sql="+sql+","+e.getMessage());
 		}
 		return sList;	
 	}

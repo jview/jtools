@@ -1,7 +1,10 @@
 package org.jview.jtool.ta_dbs;
 
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
+import java.sql.Types;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -15,7 +18,7 @@ import org.jview.jtool.util.ErrorCode;
 
 public class DbMyInsert extends IDb implements ITask{
 	private static Logger log4 = Logger.getLogger(DbMyInsert.class);
-	public static int OPER_ID=6;
+	public static int OPER_ID=11;
 	public static String CODE="myinsert";
 	public static String HELP_INFO="tableName成生mybatis insert sql语句";
 	public int getTaskId(){
@@ -61,17 +64,19 @@ public class DbMyInsert extends IDb implements ITask{
 			return sList;
 		}
 		
-//		String sql = "select * from "+ tableName;
-		try {
-			String sql = dbTool.getSqlSelect(tableName);
-//			System.out.println("---sql="+sql);
+		String sql = dbTool.getSqlSelect(tableName);
+		try {			
 			PreparedStatement ps = dbTool.getConn().prepareStatement(sql);
-			java.sql.ResultSet rs = ps.executeQuery();
 			ps.setMaxRows(1);
+			java.sql.ResultSet rs = ps.executeQuery();
 			java.sql.ResultSetMetaData rsm = rs.getMetaData();
+			
+			String pKeyInfo="<selectKey resultType=\"Java.lang.Long\" order=\"BEFORE\" keyProperty=\"id\">\n"
+					+"	SELECT SEQ_TEST.NEXTVAL FROM DUAL\n"
+					+"</selectKey>\n";
+			String insertStart=pKeyInfo+"\n insert into "+tableName+"\n(";
 			int colCount=rsm.getColumnCount();
 //			System.out.println("----colCount="+colCount);
-			String insertStart="insert into "+tableName+"\n(";
 			for(int i=1;i<=colCount;i++){
 				insertStart+=rsm.getColumnName(i)+"\n	,";
 			}
@@ -97,7 +102,7 @@ public class DbMyInsert extends IDb implements ITask{
 			
 		} catch (SQLException e) {			
 //			System.err.println("error:sql="+sql);
-			sList.add("Invalid tableName:"+tableName);
+			sList.add("error:Invalid sql="+sql+","+e.getMessage());
 			log4.error(e.getMessage());
 			if(TaskManager.debug){
 				e.printStackTrace();
