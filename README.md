@@ -24,7 +24,7 @@ jtools java常用工具集
 
 ### 本地模式下的各项功能，web模式也都支持
 ### 链接
-[jtoolweb](http://jtoolweb.jd-app.com/)<br />
+[jtoolweb](http://jtoolweb.esblink.com/)<br />
 
 
 
@@ -67,12 +67,16 @@ dbs功能
 ### desc, tableName显示表结构
 ### enum, tableName&sql 数据生成enum对象
 ### fdata, tableName&sql显示表数据(form)
-### insert, tableName成生insert sql语句
 ### json, tableName&sql 数据生成json对象
 ### select, tableName&sql生成查询语句(字段别名为类属性)
+### insert, tableName生成insert sql语句
+### update, tableName&key,key1,!key2生成update sql语句
+### myselect, tableName&sql生成mybatis查询语句(字段别名为类属性)
+### myinsert, tableName生成mybatis insert sql语句
+### myupdate, tableName&key,key1,!key2生成mybatis update sql语句
 ### show, 显示所有的表名
 ### sql, sql执行sql语句[select|update|delete]
-### update, tableName&key,key1,!key2成生update sql语句
+
 ### xml, tableName&sql 数据生成xml格式数据
 
 ## 注dbs 支持结果查询,具体建单元测试代码
