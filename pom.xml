@@ -3,8 +3,20 @@
   <groupId>org.jview.jtools</groupId>
   <artifactId>jtools</artifactId>
   <version>1.11</version>
-  <packaging>war</packaging>
+  <packaging>jar</packaging>
   
+  <distributionManagement>   
+        <repository>   
+            <id>nexus-releases</id>   
+         <name>Nexus Release Repository</name>   
+         <url>http://pm.esblink.com:8081/nexus/content/repositories/releases/</url>
+        </repository>
+        <snapshotRepository>
+            <id>nexus-snapshots</id>
+            <name>Nexus Snapshot Repository</name>
+            <url>http://pm.esblink.com:8081/nexus/content/repositories/snapshots/</url>
+        </snapshotRepository>   
+    </distributionManagement>
   <dependencies>
   		<dependency>
 			<groupId>cal</groupId>  
