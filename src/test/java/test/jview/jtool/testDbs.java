@@ -53,6 +53,12 @@ public class testDbs {
 	}
 	
 	@Test
+	public void testMySelect(){
+		String[] args={"para", "dbs", "myselect ts_user"};
+		TaskManager.main(args);
+	}
+	
+	@Test
 	public void testUpdate(){
 		String[] args={"para", "dbs", "update ts_user&user_id,!password,!user_id"};
 		TaskManager.main(args);

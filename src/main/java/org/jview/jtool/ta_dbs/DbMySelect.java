@@ -17,7 +17,7 @@ public class DbMySelect extends IDb implements ITask{
 	private static Logger log4 = Logger.getLogger(DbMySelect.class);
 	public static int OPER_ID=10;
 	public static String CODE="myselect";
-	public static String HELP_INFO="tableName&sql生成查询语句(字段别名为类属性)";
+	public static String HELP_INFO="tableName&sql生成mybatis查询语句(字段别名为类属性)";
 	public int getTaskId(){
 		return OPER_ID;
 	}
@@ -58,6 +58,7 @@ public class DbMySelect extends IDb implements ITask{
 		
 //		List<String> sList = dbTool.getTableSelect(tableName);
 //		List<String> sList = new ArrayList<String>();
+		String resultInfo="";
 		try {			
 			PreparedStatement ps = dbTool.getConn().prepareStatement(sql);
 			ps.setMaxRows(1);
@@ -65,6 +66,14 @@ public class DbMySelect extends IDb implements ITask{
 			java.sql.ResultSetMetaData rsm = rs.getMetaData();			
 			String columnName = null;
 			String escName = null;
+			
+			/**
+			 <resultMap id="BaseResultMap" type="com.wangyin.domain.User" >
+			    <id column="user_id" property="userId" jdbcType="CHAR" />
+			    <result column="user_name" property="userName" jdbcType="VARCHAR" />
+			  </resultMap>
+			 */
+			resultInfo="<resultMap id=\"\" type=\"\" >\n";
 			for(int i=1;i<=rsm.getColumnCount();i++){			
 				columnName = rsm.getColumnName(i).toLowerCase();				
 				if(columnName.indexOf("_")>0){
@@ -73,8 +82,12 @@ public class DbMySelect extends IDb implements ITask{
 				else{
 					escName = dbTool.getEscape(columnName);
 					sList.add(escName+", ");
-				}	
+				}
+				resultInfo+="	<result column=\""+columnName+"\""
+						+ " property=\""+dbTool.columnAttr(columnName)+"\""
+						+ " jdbcType=\""+dbTool.getJavaType(rsm.getColumnType(i))+"\"/>\n";
 			}
+			resultInfo+="</resultMap>\n";
 			rs.close();
 			ps.close();
 			
@@ -86,13 +99,14 @@ public class DbMySelect extends IDb implements ITask{
 			if(TaskManager.debug){
 				e.printStackTrace();
 			}
+			return sList;
 		}
 		
 		rValue = dbTool.getListContent(sList, false, false).trim();
 		if(rValue.endsWith(",")){
 			rValue = rValue.substring(0, rValue.length()-1);
 		}
-		rValue = "select "+rValue+" "+sql.substring(sql.indexOf("from"));
+		rValue = resultInfo+"\n select "+rValue+" "+sql.substring(sql.indexOf("from"));
 		dataList.add(rValue);
 		return dataList;
 	}
